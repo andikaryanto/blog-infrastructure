@@ -1,0 +1,63 @@
+name: Deploy Production (Main Branch)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Optional image tag override"
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: true
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment: production
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Resolve Deploy Tag
+        id: tag
+        shell: bash
+        env:
+          INPUT_TAG: ${{ github.event.inputs.image_tag }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${INPUT_TAG:-}" ]]; then
+            echo "image_tag=${INPUT_TAG}" >> "$GITHUB_OUTPUT"
+          else
+            source infra/servers/prod.env
+            echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Start SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+
+      - name: Add Production Host to known_hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          source infra/servers/prod.env
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${SERVER_SSH_PORT}" "${SERVER_HOST}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to Production
+        shell: bash
+        env:
+          IMAGE_TAG_TO_DEPLOY: ${{ steps.tag.outputs.image_tag }}
+        run: |
+          set -euo pipefail
+          cp infra/servers/prod.env /tmp/prod.env
+          sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG_TO_DEPLOY}/" /tmp/prod.env
+          bash infra/scripts/30_deploy.sh /tmp/prod.env
