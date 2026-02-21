@@ -8,6 +8,7 @@ Image aplikasi WordPress dibangun di repo terpisah (theme/plugin repo), lalu rep
 - `infra/scripts/00_check.sh`: validasi env + SSH
 - `infra/scripts/10_bootstrap.sh`: setup server fresh (docker + ufw + dirs)
 - `infra/scripts/20_provision_app.sh`: kirim compose + nginx conf + template compose/wp-config
+- `infra/scripts/16_setup_letsencrypt_ssl.sh`: issue cert Let's Encrypt dan pasang ke shared ssl
 - `infra/scripts/30_deploy.sh`: deploy image tag ke server
 - `infra/scripts/40_rollback.sh`: rollback ke image sebelumnya
 - `infra/app/docker-compose.yml`: stack WordPress FPM + MariaDB + Nginx
@@ -21,6 +22,7 @@ Image aplikasi WordPress dibangun di repo terpisah (theme/plugin repo), lalu rep
    - `bash infra/scripts/00_check.sh infra/servers/prod.env`
    - `bash infra/scripts/10_bootstrap.sh infra/servers/prod.env`
    - `bash infra/scripts/20_provision_app.sh infra/servers/prod.env`
+   - `bash infra/scripts/16_setup_letsencrypt_ssl.sh infra/servers/prod.env your-email@domain.com powershiftreport.com`
 3. Deploy:
    - `bash infra/scripts/30_deploy.sh infra/servers/prod.env`
 4. Rollback jika perlu:
