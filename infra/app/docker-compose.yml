@@ -3,8 +3,6 @@ services:
     image: ${APP_IMAGE}
     container_name: wordpress_app
     restart: always
-    env_file:
-      - ../shared/app.env
     depends_on:
       mariadb:
         condition: service_healthy

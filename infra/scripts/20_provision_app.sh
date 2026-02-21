@@ -28,25 +28,16 @@ source "${ENV_FILE}"
 : "${SERVER_APP_DIR:?missing}"
 
 ENV_NAME="${ENV_NAME:-prod}"
-APP_ENV_TEMPLATE="${APP_ENV_TEMPLATE:-app/env/app.env.${ENV_NAME}.template}"
 COMPOSE_ENV_TEMPLATE="${COMPOSE_ENV_TEMPLATE:-app/env/compose.env.${ENV_NAME}.template}"
 WP_CONFIG_SAMPLE_TEMPLATE="${WP_CONFIG_SAMPLE_TEMPLATE:-app/env/wp-config-sample.php.${ENV_NAME}.template}"
-APP_ENV_TEMPLATE_PATH="${APP_ENV_TEMPLATE}"
 COMPOSE_ENV_TEMPLATE_PATH="${COMPOSE_ENV_TEMPLATE}"
 WP_CONFIG_SAMPLE_TEMPLATE_PATH="${WP_CONFIG_SAMPLE_TEMPLATE}"
 
-if [[ ! -f "${APP_ENV_TEMPLATE_PATH}" ]]; then
-  APP_ENV_TEMPLATE_PATH="${INFRA_DIR}/${APP_ENV_TEMPLATE}"
-fi
 if [[ ! -f "${COMPOSE_ENV_TEMPLATE_PATH}" ]]; then
   COMPOSE_ENV_TEMPLATE_PATH="${INFRA_DIR}/${COMPOSE_ENV_TEMPLATE}"
 fi
 if [[ ! -f "${WP_CONFIG_SAMPLE_TEMPLATE_PATH}" ]]; then
   WP_CONFIG_SAMPLE_TEMPLATE_PATH="${INFRA_DIR}/${WP_CONFIG_SAMPLE_TEMPLATE}"
-fi
-if [[ ! -f "${APP_ENV_TEMPLATE_PATH}" ]]; then
-  echo "Template ${APP_ENV_TEMPLATE} not found, fallback to app/env/app.env.template"
-  APP_ENV_TEMPLATE_PATH="${INFRA_DIR}/app/env/app.env.template"
 fi
 if [[ ! -f "${COMPOSE_ENV_TEMPLATE_PATH}" ]]; then
   echo "Template ${COMPOSE_ENV_TEMPLATE} not found, fallback to app/env/compose.env.template"
@@ -82,11 +73,9 @@ echo "Provisioning app configs to ${SERVER_HOST} ..."
 
 copy_to_server "${INFRA_DIR}/app/docker-compose.yml" "${SERVER_APP_DIR}/app/docker-compose.yml"
 copy_to_server "${INFRA_DIR}/app/nginx/default.conf" "${SERVER_APP_DIR}/app/nginx/default.conf"
-copy_to_server "${APP_ENV_TEMPLATE_PATH}" "${SERVER_APP_DIR}/app.env.template"
 copy_to_server "${COMPOSE_ENV_TEMPLATE_PATH}" "${SERVER_APP_DIR}/compose.env.template"
 copy_to_server "${WP_CONFIG_SAMPLE_TEMPLATE_PATH}" "${SERVER_APP_DIR}/wp-config-sample.php.template"
 
-"${SSH_BASE[@]}" "test -f ${SERVER_APP_DIR}/shared/app.env || cp ${SERVER_APP_DIR}/app.env.template ${SERVER_APP_DIR}/shared/app.env 2>/dev/null || true"
 "${SSH_BASE[@]}" "test -f ${SERVER_APP_DIR}/shared/compose.env || cp ${SERVER_APP_DIR}/compose.env.template ${SERVER_APP_DIR}/shared/compose.env 2>/dev/null || true"
 "${SSH_BASE[@]}" "cp -f ${SERVER_APP_DIR}/wp-config-sample.php.template ${SERVER_APP_DIR}/shared/wp-config-sample.php 2>/dev/null || true"
 

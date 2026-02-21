@@ -7,11 +7,12 @@ Image aplikasi WordPress dibangun di repo terpisah (theme/plugin repo), lalu rep
 - `infra/servers/prod.env`: env server production
 - `infra/scripts/00_check.sh`: validasi env + SSH
 - `infra/scripts/10_bootstrap.sh`: setup server fresh (docker + ufw + dirs)
-- `infra/scripts/20_provision_app.sh`: kirim compose + nginx conf + env template
+- `infra/scripts/20_provision_app.sh`: kirim compose + nginx conf + template compose/wp-config
 - `infra/scripts/30_deploy.sh`: deploy image tag ke server
 - `infra/scripts/40_rollback.sh`: rollback ke image sebelumnya
 - `infra/app/docker-compose.yml`: stack WordPress FPM + MariaDB + Nginx
 - `infra/app/nginx/default.conf`: Nginx FastCGI config ke `wordpress:9000`
+- `infra/app/env/compose.env.prod.template`: template env MariaDB/volume
 - `infra/app/env/wp-config-sample.php.prod.template`: template config WordPress production
 
 ## Alur Pakai

@@ -27,7 +27,6 @@ echo "Deploying ${APP_IMAGE} to ${SERVER_HOST} ..."
 "${SSH_BASE[@]}" "set -e; \
   cd ${SERVER_APP_DIR}/app; \
   mkdir -p ${SERVER_APP_DIR}/releases; \
-  test -f ${SERVER_APP_DIR}/shared/app.env; \
   test -f ${SERVER_APP_DIR}/shared/compose.env; \
   test -f ${SERVER_APP_DIR}/shared/wp-config-sample.php; \
   grep -Eq '^MARIADB_DATABASE=.+' ${SERVER_APP_DIR}/shared/compose.env; \
