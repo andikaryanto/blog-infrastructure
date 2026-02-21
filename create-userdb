@@ -1,0 +1,6 @@
+
+CREATE USER 'iamawizard'@'localhost' IDENTIFIED BY '!_i+wjVJ4^#8dDC]yt';
+
+GRANT ALL PRIVILEGES ON *.* TO 'iamawizard'@'%';
+
+FLUSH PRIVILEGES;
