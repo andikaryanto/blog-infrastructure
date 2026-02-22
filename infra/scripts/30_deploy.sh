@@ -46,6 +46,7 @@ echo "Deploying ${APP_IMAGE} to ${SERVER_HOST} ..."
   \${DOCKER_CMD} compose --env-file ${SERVER_APP_DIR}/shared/compose.env down || true; \
   \${DOCKER_CMD} volume rm \"\${CODE_VOLUME}\" >/dev/null 2>&1 || true; \
   \${DOCKER_CMD} compose --env-file ${SERVER_APP_DIR}/shared/compose.env up -d --remove-orphans; \
+  \${DOCKER_CMD} exec wordpress_app sh -lc 'mkdir -p /var/www/html/wp-content/uploads && chown -R www-data:www-data /var/www/html/wp-content/uploads && chmod -R u+rwX,g+rwX /var/www/html/wp-content/uploads'; \
   \${DOCKER_CMD} exec wordpress_app sh -lc 'if [ -f /var/www/html/wp-config-sample.php ]; then cp -f /var/www/html/wp-config-sample.php /var/www/html/wp-config.php; elif [ ! -f /var/www/html/wp-config.php ]; then echo wp-config-sample.php not found; exit 1; fi; chown www-data:www-data /var/www/html/wp-config.php'; \
   echo '${APP_IMAGE}' > ${SERVER_APP_DIR}/releases/current_image"
 
