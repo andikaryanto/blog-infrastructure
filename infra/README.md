@@ -28,6 +28,34 @@ Image aplikasi WordPress dibangun di repo terpisah (theme/plugin repo), lalu rep
 4. Rollback jika perlu:
    - `bash infra/scripts/40_rollback.sh infra/servers/prod.env`
 
+## Update SSL
+Jalankan dari root repo untuk renew sertifikat Let's Encrypt dan memasangnya ke `shared/ssl` yang dipakai container Nginx:
+
+```bash
+bash infra/scripts/16_setup_letsencrypt_ssl.sh infra/servers/prod.env your-email@domain.com powershiftreport.com www.powershiftreport.com
+```
+
+Jika sertifikat sudah expired atau ingin memaksa issue ulang:
+
+```bash
+FORCE_RENEWAL=1 bash infra/scripts/16_setup_letsencrypt_ssl.sh infra/servers/prod.env your-email@domain.com powershiftreport.com www.powershiftreport.com
+```
+
+Dari Windows PowerShell:
+
+```powershell
+$env:FORCE_RENEWAL="1"
+bash infra/scripts/16_setup_letsencrypt_ssl.sh infra/servers/prod.env your-email@domain.com powershiftreport.com www.powershiftreport.com
+```
+
+Setelah selesai, cek tanggal expiry sertifikat publik:
+
+```bash
+openssl s_client -connect powershiftreport.com:443 -servername powershiftreport.com </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+```
+
+Pastikan `notAfter` sudah menjadi tanggal baru. Jika muncul `ERR_CERT_DATE_INVALID`, biasanya sertifikat yang disajikan Nginx sudah expired.
+
 ## CI/CD
 - Workflow: `.github/workflows/deploy-prod.yml`
 - Trigger: push ke `main` (termasuk fast-forward merge ke `main`)
