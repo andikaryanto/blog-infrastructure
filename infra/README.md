@@ -39,4 +39,5 @@ Image aplikasi WordPress dibangun di repo terpisah (theme/plugin repo), lalu rep
 - Image aplikasi harus kompatibel dengan WordPress FPM (`php-fpm`, port 9000).
 - Deploy script akan recreate volume code `WORDPRESS_DATA_VOLUME` saat deploy/rollback agar kode dari image terbaru benar-benar terambil.
 - Upload media tetap aman karena disimpan di volume terpisah `WORDPRESS_UPLOADS_VOLUME`.
+- Plugin WordPress persisten di server (volume `WORDPRESS_PLUGINS_VOLUME`), jadi plugin yang diinstall dari wp-admin tidak hilang saat deploy.
 - `shared/wp-config-sample.php` diprovision dari template deployment, lalu setiap deploy/rollback akan dicopy ke `/var/www/html/wp-config.php`.
